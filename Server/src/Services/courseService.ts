@@ -5,9 +5,14 @@ export const getBasicCourseInfo = async () => {
   return await Course.find().select("title description imagePath");
 };
 
-// Get full course details by ID
-export const getCourseDetailsById = async (courseId: string) => {
-  return await Course.findById(courseId);
+// Service function to get course details by ID with specific fields
+export const getCourseDetailsById = async (courseId: string, fields?: string) => {
+  let selectFields = "title"; // Include title by default
+  if (fields) {
+    selectFields += " " + fields.split(",").join(" ");
+  }
+
+  return await Course.findById(courseId).select(selectFields);
 };
 
 // Create a new course, ensuring the title is unique
