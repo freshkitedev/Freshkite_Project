@@ -1,24 +1,25 @@
 import { User } from "../models/user";
 import { verifyAuth } from "../utils/authUtils";
+import { IToken } from "../types/token";
 
 // Login or create a user and return a JWT token
 export const loginOrCreateUser = async (idToken: string): Promise<string> => {
   // Verify the token with the authentication provider (e.g., Google)
-  const userInfo = await verifyAuth(idToken);
+  const userInfo: IToken | null = await verifyAuth(idToken);
 
   if (!userInfo) {
     throw new Error("Invalid ID token");
   }
 
   // Check if the user already exists
-  let user = await User.findOne({ googleId: userInfo.sub });
+  let user = await User.findOne({ googleId: userInfo.googleId });
   if (!user) {
     // Create a new user if they don't already exist
     user = await User.create({
-      googleId: userInfo.sub,
-      username: userInfo.name,
-      profilePicture: userInfo.picture,
+      googleId: userInfo.googleId,
       email: userInfo.email,
+      username: userInfo.name ?? "defaultName",
+      profilePicture: userInfo.picture ?? "defaultPictureUrl",
     });
   }
 
