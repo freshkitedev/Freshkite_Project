@@ -11,6 +11,7 @@ Start the Development Server: Use the appropriate command to launch the server i
 Access the Application: Open your browser and navigate to http://localhost:3000 to view the running project.
 
 Notes: By default, the server runs on port 3000. Make sure your environment variables are set correctly, especially if you're using services like Google OAuth or any authentication library. Double-check that your database URI and other secrets are accurate and securely managed.
+
 ## Backend Setup
 
 After cloning the repository, follow these steps to get the project running:
