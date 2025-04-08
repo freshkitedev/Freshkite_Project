@@ -1,6 +1,10 @@
 import { Request } from "express";
-import { IToken } from "./token"; 
+import { TokenPayload } from "google-auth-library";
 
 export interface CustomRequest extends Request {
-    user?: IToken;
+  user?: TokenPayload;
+  
 }
+
+
+  

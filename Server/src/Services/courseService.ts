@@ -6,7 +6,10 @@ export const getBasicCourseInfo = async () => {
 };
 
 // Service function to get course details by ID with specific fields
-export const getCourseDetailsById = async (courseId: string, fields?: string) => {
+export const getCourseDetailsById = async (
+  courseId: string,
+  fields?: string
+) => {
   let selectFields = "title"; // Include title by default
   if (fields) {
     selectFields += " " + fields.split(",").join(" ");
@@ -19,7 +22,7 @@ export const getCourseDetailsById = async (courseId: string, fields?: string) =>
 export const createCourse = async (courseData: any) => {
   // Check if a course with the same title already exists
   const existingCourse = await Course.findOne({ title: courseData.title });
-  
+
   if (existingCourse) {
     throw new Error("Course with this title already exists.");
   }
