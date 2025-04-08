@@ -10,8 +10,8 @@ dotenv.config();
 export const app = express();
 
 // Middleware setup
-app.use(cors()); 
-app.use(bodyParser.json());  
+app.use(cors());
+app.use(bodyParser.json());
 app.use("/api/auth", authRoutes);
 app.use("/Oauth",googleAuthRoute);
 

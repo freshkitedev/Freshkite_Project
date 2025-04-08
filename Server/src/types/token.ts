@@ -6,5 +6,5 @@ export interface IToken {
 }
 
 export interface AuthenticatedRequest extends Request {
-  user?: IToken; 
+  user?: IToken;
 }
