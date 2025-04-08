@@ -76,7 +76,7 @@ const LoginModal = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white w-96 p-6 rounded-lg shadow-lg">
                 <h2 className="text-xl font-semibold text-center mb-4">{isSignup ? 'Sign Up' : 'Sign In'}</h2>
-
+                {/* form for signup && signin */}
                 <form className="flex flex-col space-y-2" onSubmit={handleSubmit}>
                     {isSignup && (
                         <>
