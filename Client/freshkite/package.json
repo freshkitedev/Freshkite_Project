@@ -9,9 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tailwindcss/aspect-ratio": "^0.4.2",
     "@react-oauth/google": "^0.12.1",
-    "next": "14.2.10",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "next": "^15.2.4",
     "next-auth": "^4.24.7",
     "react": "^18",
     "react-dom": "^18",
