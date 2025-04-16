@@ -15,7 +15,6 @@ export const singUp = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    console.log(req.body);
     const { user, token } = await loginUser(email, password);
     res.json({ message: "Login successful", user, token });
   } catch (error: any) {
