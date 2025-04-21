@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { LoginContext } from '@/src/context/logincontext';
 import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
 import { useRouter } from 'next/router';
-import { UserContext } from '@/src/context/userContent';
+import { UserContext, useUser } from '@/src/context/userContent';
 
 interface IUser {
     name: string;
@@ -13,12 +13,11 @@ interface IUser {
 const LoginModal = () => {
     const router = useRouter();
     const context = useContext(LoginContext);
+    const { login } = useUser();
     if (!context) throw new Error("LoginContext is undefined. Make sure you are wrapping your component tree in LoginProvider.");
 
-    const { showModal, setShowModal, setIsLoggedIn } = context;
+    const { showModal, setShowModal} = context;
     const [user, setUser] = useState<IUser>({ name: "", email: "", password: "" });
-    const userContext = useContext(UserContext);
-    const setGlobalUser = userContext?.setUser;
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const [isSignup, setIsSignup] = useState(false);
 
@@ -34,9 +33,8 @@ const LoginModal = () => {
 
             const data = await response.json();
             setShowModal(false);
-            setIsLoggedIn(true);
-            setGlobalUser?.(data.user);
-            router.push('/course');
+            router.push('/dashboard');
+            login(data.user);
         } catch (error) {
             console.error('Error during authentication:', error);
         }
@@ -64,9 +62,8 @@ const LoginModal = () => {
 
             const data = await response.json();
             setShowModal(false);
-            setIsLoggedIn(true);
-            setGlobalUser?.(data.user);
-            router.push('/course');
+            router.push('/dashboard');
+            login(data.user);
         } catch (error) {
             console.error('Auth error:', error);
         }
