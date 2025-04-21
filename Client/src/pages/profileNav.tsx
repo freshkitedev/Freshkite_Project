@@ -1,19 +1,12 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 import { useUser } from '@/src/context/userContent';
 import defaultProfileImage from '@/public/images/defaultProfile.jpeg';
-import { LoginContext } from '../context/logincontext';
 import router from 'next/router';
 
 const ProfileNavbar = () => {
-    const { user, setUser } = useUser();
+    const { logout,user } = useUser();
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
-    const context = useContext(LoginContext);
-    if (!context) {
-        throw new Error("LoginContext is undefined. Make sure you are wrapping your component tree in LoginProvider.");
-    }
-    const { isLoggedIn, setIsLoggedIn } = context;
-
 
     // Close dropdown if clicked outside
     useEffect(() => {
@@ -27,14 +20,13 @@ const ProfileNavbar = () => {
     }, []);
 
     const handleLogout = () => {
-        setUser(null);
+        logout()
         router.push('/');
-        setIsLoggedIn(!isLoggedIn);
     };
 
     return (
         <div className="relative inline-block text-left" ref={dropdownRef}>
-            {isLoggedIn && (
+            {user && (
                 <button
                     onClick={() => setDropdownOpen(!isDropdownOpen)}
                     className="flex items-center gap-2 border-2 border-gray-700 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
