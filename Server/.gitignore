@@ -1,4 +1,4 @@
 # Environment variable files
 .env
 node_modules/
-Server/src/utils/service-account.json
+src/utils/service-account.json
