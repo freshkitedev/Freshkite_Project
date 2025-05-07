@@ -1,6 +1,4 @@
-# ========================
-# Stage 1: Build Stage
-# ========================
+# ---------- Base Stage ----------
 FROM node:18-alpine AS builder
 
 WORKDIR /app
@@ -10,9 +8,7 @@ RUN npm install
 
 COPY . .
 
-# ============================
-# Stage 2: Production Stage
-# ============================
+# ---------- Dev Stage ----------
 FROM node:18-alpine
 
 WORKDIR /app
