@@ -15,6 +15,7 @@ Access the Application: Open your browser and navigate to http://localhost:3000 
  **Note:**
    ```plaintext
    NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_client_id_here
+   ```
 
 
 ## Backend Setup
@@ -35,6 +36,7 @@ Once the server is running, you can access the application in your browser at [h
    CLIENT_SECRET=your_client_secret_here
    CLIENT_URL=http://localhost:3000/
    JWT_SECRET=your_jwt_secret_here
+  ```
   
 ## 🐳 Running with Docker
 
@@ -45,15 +47,17 @@ After cloning the repository:
 2. Create a `.env` file in both `frontend` and `backend` folders (same as above).
 
 3. Build the Docker image:
+   
     ```bash
-    docker build -t freshkite .
+    docker build -t frontend .
+    docker build -t backend .
     ```
-
-4. Run the Docker image:
+    
+5. Run the Docker image:
     ```bash
-    docker run -p 3000:3000 -p 5000:5000 freshkite
+    docker run -p 3000:3000 frontend
+    docker run -p 5000:5000 backend
     ```
-
 ---
 
 ✅ Done! You can now access:
@@ -63,6 +67,4 @@ After cloning the repository:
 ---
 
 ## 📌 Notes
-
 - Make sure your `.env` files are present before building the Docker image.
-
