@@ -10,6 +10,6 @@ export const createCourseFromDocs  = async(req:Request,res:Response) =>{
         //... add the course to database logic
         res.status(200).json(jsonData);
     }catch(error:any){
-        return res.status(500).json({error:'Something went wrong',Error:error})
+        return res.status(500).json({error:'Something went wrong', Error:error})
     }
 }
