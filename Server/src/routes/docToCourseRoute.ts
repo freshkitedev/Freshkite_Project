@@ -5,6 +5,6 @@ import { isAdmin } from "../middleware/VerfiyRole";
 
 const router = express.Router();
 
-router.post("/create-course", verifyToken, isAdmin, createCourseFromDocs);
+router.post("/create-course",  createCourseFromDocs);
 
 export default router;
