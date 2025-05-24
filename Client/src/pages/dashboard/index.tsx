@@ -2,9 +2,9 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/src/context/userContent';
 import Navbar from '@/src/components/common/navbar';
-import AdminDashboard from './adminDashboard'
-import UserDashboard from './userDashboard';
-import TeacherDashboard from './TeacherDashBoard';
+import AdminDashboard from './adminDashBoard'
+import UserDashboard from './userDashBoard';
+import TeacherDashboard from './teacherDashBoard';
 
 export default function Dashboard() {
     const { user } = useUser();
