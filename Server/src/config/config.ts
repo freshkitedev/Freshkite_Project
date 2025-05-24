@@ -1,9 +1,9 @@
 require("dotenv").config();
 
 export const config = {
-    dbUrl : process.env.DB as string,
+    MongoDbUri : process.env.MONGODB_URI as string,
     Port : process.env.PORT,
-    clientId: process.env.ClientId as string,
+    RedirectUrl: process.env.FRONTEND_REDIRECT_URL as string,
     jwtSecret: process.env.JWT_SECRET as string,
     googleClientId : process.env.GOOGLE_CLIENT_ID as string
 
