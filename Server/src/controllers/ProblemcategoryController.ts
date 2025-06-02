@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 
+=======
+// controllers/problemController.ts
+>>>>>>> f4a334fb01722329a53073f4039cc1225d09b205
 import { Request, Response } from "express";
 import { Problem } from "../models/Problem";
 

@@ -1,22 +1,42 @@
 import { Request, Response } from "express";
+<<<<<<< HEAD
 import CourseService from "../Services/courseService"; 
 
 class CourseController {
   
   // Create a new course
+=======
+import CourseService from "../Services/CourseService"; // Adjust the path to your service layer
+
+class CourseController {
+  
+>>>>>>> f4a334fb01722329a53073f4039cc1225d09b205
   async createCourse(req: Request, res: Response) {
     try {
       const data = req.body;
 
+<<<<<<< HEAD
+=======
+      
+>>>>>>> f4a334fb01722329a53073f4039cc1225d09b205
       if (!data.category || !['web', 'problem'].includes(data.category)) {
         return res.status(400).json({ message: "Invalid category. Should be 'web' or 'problem'." });
       }
 
       let savedCourse;
 
+<<<<<<< HEAD
       if (data.category === 'web') {
         savedCourse = await CourseService.createCourseWithSubtopics(data);
       } else if (data.category === 'problem') {
+=======
+      
+      if (data.category === 'web') {
+        savedCourse = await CourseService.createCourseWithSubtopics(data);
+      }
+      
+      else if (data.category === 'problem') {
+>>>>>>> f4a334fb01722329a53073f4039cc1225d09b205
         savedCourse = await CourseService.createCourseWithProblems(data);
       }
 
@@ -26,6 +46,7 @@ class CourseController {
       return res.status(500).json({ message: "Failed to create course", error: err });
     }
   }
+<<<<<<< HEAD
 
   // Get all courses
   async getAllCourses(req: Request, res: Response) {
@@ -56,4 +77,8 @@ class CourseController {
   }
 }
 
+=======
+}
+
+>>>>>>> f4a334fb01722329a53073f4039cc1225d09b205
 export default new CourseController();
