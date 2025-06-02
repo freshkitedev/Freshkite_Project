@@ -1,53 +1,73 @@
-import { Course } from "../models/course";
+import { Basecourse } from "../models/Basecourse";
+import { Subtopic } from "../models/Subtopic";
+import { Problem } from "../models/Problem";
 
-// Get basic course info (title, description, image)
-export const getBasicCourseInfo = async () => {
-  return await Course.find().select("title description imagePath");
-};
+class CourseService {
+  async createCourseWithSubtopics(data: any) {
+    const { title, description, category, phase, subtopics } = data;
 
-// Service function to get course details by ID with specific fields
-export const getCourseDetailsById = async (
-  courseId: string,
-  fields?: string
-) => {
-  let selectFields = "title"; // Include title by default
-  if (fields) {
-    selectFields += " " + fields.split(",").join(" ");
+    const course = new Basecourse({ title, description, category, phase });
+    const savedCourse = await course.save();
+
+    const createdSubtopics = await Promise.all(
+      subtopics.map(async (sub: any) => {
+        const newSub = new Subtopic({
+          basecourseId: savedCourse._id,
+          title: sub.subtopic,
+          notes: sub.notes,
+          videos: sub.videos,
+          assignments: sub.assignments
+        });
+        return await newSub.save();
+      })
+    );
+
+    savedCourse.subtitle = createdSubtopics.map((s) => s._id);
+    await savedCourse.save();
+
+    return savedCourse;
   }
 
-  return await Course.findById(courseId).select(selectFields);
-};
+  async createCourseWithProblems(data: any) {
+    const { title, description, category, phase, problems } = data;
 
-// Create a new course, ensuring the title is unique
-export const createCourse = async (courseData: any) => {
-  // Check if a course with the same title already exists
-  const existingCourse = await Course.findOne({ title: courseData.title });
+    const course = new Basecourse({ title, description, category, phase });
+    const savedCourse = await course.save();
 
-  if (existingCourse) {
-    throw new Error("Course with this title already exists.");
+    const createdProblems = await Promise.all(
+      problems.map(async (problem: any) => {
+        const newProblem = new Problem({
+          basecourseId: savedCourse._id,
+          title: problem.title,
+          description: problem.description,
+          difficulty: problem.difficulty,
+          problemLink: problem.problemLink,
+          videoLink: problem.videoLink,
+          category: problem.category,
+        });
+        return await newProblem.save();
+      })
+    );
+
+    savedCourse.problems = createdProblems.map((p) => p._id);
+    await savedCourse.save();
+
+    return savedCourse;
   }
 
-  // Create a new course if the title is unique
-  return await Course.create(courseData);
-};
-
-// Update a course by ID
-export const updateCourse = async (courseId: string, courseData: any) => {
-  const updatedCourse = await Course.findByIdAndUpdate(courseId, courseData, {
-    new: true,
-    runValidators: true,
-  });
-  if (!updatedCourse) {
-    throw new Error("Course not found");
+  
+  async getAllCourses() {
+    return await Basecourse.find()
+      .populate("subtitle")
+      .populate("problems");
   }
-  return updatedCourse;
-};
 
-// Delete a course by ID
-export const deleteCourse = async (courseId: string) => {
-  const deletedCourse = await Course.findByIdAndDelete(courseId);
-  if (!deletedCourse) {
-    throw new Error("Course not found");
+  
+  async getCourseById(id: string) {
+    return await Basecourse.findById(id)
+      .populate("subtitle")
+      .populate("problems");
   }
-  return deletedCourse;
-};
+}
+
+export default new CourseService();
