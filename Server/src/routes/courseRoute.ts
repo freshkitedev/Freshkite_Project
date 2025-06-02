@@ -1,28 +1,10 @@
-import { Router } from "express";
-import {
-  createCourse,
-  getCourses,
-  getCourseById,
-  updateCourse,
-  deleteCourse,
-} from "../controllers/courseController";
-import { verifyToken } from "../middleware/verifyUser";
+import express from "express";
+import CourseController from "../controllers/courseController";
 
-const router = Router(); 
+const router = express.Router();
 
-// Create a new course 
-router.post("/create",createCourse);
-
-// Get all courses
-router.get("/courses", getCourses);
- 
-// Get a single course by ID
-router.get("/:id", getCourseById);
-
-// Update a course by ID
-router.put("/:id", updateCourse);
-
-// Delete a course by ID
-router.delete("/:id", deleteCourse);
+router.post("/courses", CourseController.createCourse);
+router.get("/courses", CourseController.getAllCourses);
+router.get("/courses/:id", CourseController.getCourseById);
 
 export default router;
