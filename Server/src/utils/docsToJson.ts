@@ -1,7 +1,7 @@
 import { google } from "googleapis";
 import { JWT } from "google-auth-library";
-import path from 'path';
-import cloudinary from "../config/cloudinary"
+import path from "path";
+import cloudinary from "../config/cloudinary";
 
 interface NoteWithImages {
   type: "text" | "image";
@@ -51,139 +51,105 @@ export async function fetchGoogleDocAsJson(docId: string): Promise<DocumentJSON 
     };
 
     let currentSubtopic: Subtopic | null = null;
-    let currentSection: "notes" | "videos" | "assignments" | null = null;
+    let currentSection: "notes" | "videos" | "assignments" | null = "notes";
     let imageIndex = 0;
 
     for (const element of content) {
       const paragraph = element.paragraph;
       if (!paragraph) continue;
 
-      const style = paragraph.paragraphStyle?.namedStyleType || "";
-
-      // HEADINGS
       const combinedText = (paragraph.elements || [])
         .map((el) => el.textRun?.content?.trim() || "")
         .join("")
         .trim();
 
-      if (style === "TITLE") {
-        jsonResult.title = combinedText;
+      // Section Heading Start
+      if (combinedText.startsWith("Title:")) {
+        jsonResult.title = combinedText.replace("Title:", "").trim();
         continue;
       }
 
-      if (style === "SUBTITLE") {
-        jsonResult.description = combinedText;
+      if (combinedText.startsWith("Description:")) {
+        jsonResult.description = combinedText.replace("Description:", "").trim();
         continue;
       }
 
-      if (style === "HEADING_2") {
-        jsonResult.phase = combinedText;
+      if (combinedText.startsWith("Category:")) {
+        jsonResult.category = combinedText.replace("Category:", "").trim();
         continue;
       }
 
-      if (style === "HEADING_3") {
-        jsonResult.category = combinedText;
+      if (combinedText.startsWith("Phase:")) {
+        jsonResult.phase = combinedText.replace("Phase:", "").trim();
         continue;
       }
 
-      if (style === "HEADING_1") {
+      if (combinedText.startsWith("Subtopic:")) {
         if (currentSubtopic) {
-          // Filter out subtopics with empty content, videos, or assignments
-          if (
-            currentSubtopic.content.length > 0 ||
-            currentSubtopic.videos.length > 0 ||
-            currentSubtopic.assignments.length > 0
-          ) {
-            jsonResult.subtopics.push(currentSubtopic);
-          }
+          jsonResult.subtopics.push(currentSubtopic);
         }
         currentSubtopic = {
-          subtopic: combinedText,
+          subtopic: combinedText.replace("Subtopic:", "").trim(),
           content: [],
           videos: [],
           assignments: [],
         };
-        currentSection = null;
-        continue;
-      }
-
-      // SECTION DETECTION
-      if (/^notes:?$/i.test(combinedText)) {
         currentSection = "notes";
         continue;
       }
-      if (/^(youtube videos|videos):?$/i.test(combinedText)) {
+
+      if (combinedText.startsWith("YouTube Videos:")) {
         currentSection = "videos";
         continue;
       }
-      if (/^assignments:?$/i.test(combinedText)) {
+
+      if (combinedText.startsWith("Assignments:")) {
         currentSection = "assignments";
         continue;
       }
 
-      if (!currentSubtopic) continue;
-
-      // BULLET HANDLING
-      if (paragraph.bullet && currentSection === "videos" && combinedText) {
-        currentSubtopic.videos.push(combinedText);
+      // IMAGE
+      const firstElement = paragraph.elements?.[0];
+      const objectId = firstElement?.inlineObjectElement?.inlineObjectId;
+      if (objectId && inlineObjects[objectId]) {
+        const embeddedObject = inlineObjects[objectId].inlineObjectProperties?.embeddedObject;
+        const sourceUri = embeddedObject?.imageProperties?.contentUri;
+        if (sourceUri && currentSubtopic) {
+          const uploaded = await cloudinary.uploader.upload(sourceUri, {
+            folder: "google-docs-images",
+          });
+          currentSubtopic.content.push({
+            type: "image",
+            url: uploaded.secure_url,
+            alt: `Image ${imageIndex++}`,
+          });
+        }
         continue;
       }
 
-      if (paragraph.bullet && currentSection === "assignments" && combinedText) {
-        currentSubtopic.assignments.push(combinedText);
-        continue;
-      }
-
-      // NOTES SECTION - TEXT + IMAGES IN ORDER
-      if (currentSection === "notes") {
-        for (const el of paragraph.elements || []) {
-          // TEXT ELEMENT
-          if (el.textRun?.content?.trim()) {
-            const text = el.textRun.content.trim();
-            if (text) {
-              currentSubtopic.content.push({
-                type: "text",
-                value: text,
-              });
-            }
-          }
-
-          // IMAGE ELEMENT
-          const inlineObjId = el.inlineObjectElement?.inlineObjectId;
-          const embedded = inlineObjId ? inlineObjects[inlineObjId]?.inlineObjectProperties?.embeddedObject : null;
-          const imageUri = embedded?.imageProperties?.contentUri;
-
-          if (imageUri) {
-            try {
-              const uploadResult = await cloudinary.uploader.upload(imageUri, {
-                folder: "google-docs-images",
-                public_id: `${docId}_${imageIndex}`,
-                overwrite: true,
-              });
-
-              currentSubtopic.content.push({
-                type: "image",
-                url: uploadResult.secure_url,
-                alt: `Image ${imageIndex}`,
-              });
-
-              imageIndex++;
-            } catch (err) {
-              console.error(`Image upload failed for ${imageUri}:`, err);
-            }
-          }
+      // TEXT BLOCK
+      if (combinedText && currentSubtopic) {
+        switch (currentSection) {
+          case "notes":
+            currentSubtopic.content.push({ type: "text", value: combinedText });
+            break;
+          case "videos":
+            currentSubtopic.videos.push(combinedText);
+            break;
+          case "assignments":
+            currentSubtopic.assignments.push(combinedText);
+            break;
         }
       }
     }
 
-    // Filter out subtopics with no content
-    if (currentSubtopic && (currentSubtopic.content.length > 0 || currentSubtopic.videos.length > 0 || currentSubtopic.assignments.length > 0)) {
+    if (currentSubtopic) {
       jsonResult.subtopics.push(currentSubtopic);
     }
 
     return jsonResult;
   } catch (error) {
-    console.error("Error processing Google Doc:", error);
+    console.error("Error fetching document:", error);
     return undefined;
   }
 }
