@@ -2,7 +2,7 @@
 
 import { useContext } from 'react';
 import { LoginContext } from '@/src/context/logincontext';
-import { UserContext, useUser } from '@/src/context/userContent';
+import { UserContext, useUser } from '@/src/context/userContext';
 import ProfileNavbar from '@/src/pages/profileNav';
 
 export const LoginBtn = () => {

@@ -2,7 +2,8 @@ import { useContext, useState } from 'react';
 import { LoginContext } from '@/src/context/logincontext';
 import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
 import { useRouter } from 'next/router';
-import { UserContext, useUser } from '@/src/context/userContent';
+import { UserContext, useUser } from '@/src/context/userContext';
+import { useError } from '@/src/context/errorContext';
 
 interface IUser {
     name: string;
@@ -20,7 +21,7 @@ const LoginModal = () => {
     const [user, setUser] = useState<IUser>({ name: "", email: "", password: "" });
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const [isSignup, setIsSignup] = useState(false);
-
+    const {setError,error} = useError()
     const handleSuccess = async (credentialResponse: CredentialResponse) => {
         const googleId = credentialResponse.credential;
 
@@ -30,13 +31,17 @@ const LoginModal = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ googleId }),
             });
-
+            if (!response.ok) {
+                setError("something went wrong try again")
+                return;
+            }
             const data = await response.json();
             setShowModal(false);
             router.push('/dashboard');
             login(data.user);
         } catch (error) {
             console.error('Error during authentication:', error);
+            setError("Google authentication failed. Please try again.");
         }
     };
 
@@ -57,15 +62,17 @@ const LoginModal = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(user),
             });
-
-            if (!response.ok) throw new Error('Network response was not ok');
-
+             if (!response.ok) {
+                setError("Email or password is incorrect");
+                return;
+            }
             const data = await response.json();
             setShowModal(false);
             router.push('/dashboard');
             login(data.user);
         } catch (error) {
             console.error('Auth error:', error);
+            setError("Something went wrong. Please try again.");
         }
     };
 
