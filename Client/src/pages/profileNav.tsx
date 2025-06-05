@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useContext } from 'react';
-import { useUser } from '@/src/context/userContent';
+import { useUser } from '@/src/context/userContext';
 import defaultProfileImage from '@/public/images/defaultProfile.jpeg';
 import router from 'next/router';
 
