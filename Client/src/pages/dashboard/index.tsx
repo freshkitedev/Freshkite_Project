@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useUser } from '@/src/context/userContent';
+import { useUser } from '@/src/context/userContext';
 import Navbar from '@/src/components/common/navbar';
 import AdminDashboard from './adminDashBoard'
 import UserDashboard from './userDashBoard';
